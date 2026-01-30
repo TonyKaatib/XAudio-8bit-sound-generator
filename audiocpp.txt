@@ -1,0 +1,154 @@
+void AudioEngine::GenerateSineWave(float frequency, float duration) {
+	const int sampleRate = 44100;
+	const int amplitude = 30000;
+	int numSamples = (int)(duration * sampleRate);
+	short* waveData = new short[numSamples];
+	for (int i = 0; i < numSamples; i++) {
+		waveData[i] = (short)(amplitude * sin((2.0f * 3.14159265f * frequency * i) / sampleRate));
+	}
+	wfx.Format.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.Format.nChannels = 1;
+	wfx.Format.nSamplesPerSec = sampleRate;
+	wfx.Format.wBitsPerSample = 16;
+	wfx.Format.nBlockAlign = (wfx.Format.nChannels * wfx.Format.wBitsPerSample) / 8;
+	wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
+	wfx.Format.cbSize = 0;
+	buffer.AudioBytes = numSamples * sizeof(short);
+	buffer.pAudioData = (BYTE*)waveData;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	if (XAudioSource) {
+		XAudioSource->Stop(0);
+		XAudioSource->FlushSourceBuffers();
+		XAudioSource->DestroyVoice();
+	}
+	HRESULT hr = XAudio->CreateSourceVoice(&XAudioSource, (WAVEFORMATEX*)&wfx);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to create source voice!", "Time to debug", MB_OK);
+		return;
+	}
+	hr = XAudioSource->SubmitSourceBuffer(&buffer);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to submit source buffer!", "Time to debug", MB_OK);
+		return;
+	}
+}
+
+void AudioEngine::GenerateSquareWave(float frequency, float duration) {
+	const int sampleRate = 44100;
+	const int amplitude = 30000;
+	int numSamples = (int)(duration * sampleRate);
+	short* waveData = new short[numSamples];
+	int samplesPerCycle = (int)(sampleRate / frequency);
+	for (int i = 0; i < numSamples; i++) {
+		if ((i % samplesPerCycle) < (samplesPerCycle / 2)) {
+			waveData[i] = amplitude;
+		}
+		else {
+			waveData[i] = -amplitude;
+		}
+	}
+	wfx.Format.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.Format.nChannels = 1;
+	wfx.Format.nSamplesPerSec = sampleRate;
+	wfx.Format.wBitsPerSample = 16;
+	wfx.Format.nBlockAlign = (wfx.Format.nChannels * wfx.Format.wBitsPerSample) / 8;
+	wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
+	wfx.Format.cbSize = 0;
+	buffer.AudioBytes = numSamples * sizeof(short);
+	buffer.pAudioData = (BYTE*)waveData;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	if (XAudioSource) {
+		XAudioSource->Stop(0);
+		XAudioSource->FlushSourceBuffers();
+		XAudioSource->DestroyVoice();
+	}
+	HRESULT hr = XAudio->CreateSourceVoice(&XAudioSource, (WAVEFORMATEX*)&wfx);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to create source voice!", "Time to debug", MB_OK);
+		return;
+	}
+	hr = XAudioSource->SubmitSourceBuffer(&buffer);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to submit source buffer!", "Time to debug", MB_OK);
+		return;
+	}
+}
+
+void AudioEngine::GenerateTriangleWave(float frequency, float duration) {
+	const int sampleRate = 44100;
+	const int amplitude = 30000;
+	int numSamples = (int)(duration * sampleRate);
+	short* waveData = new short[numSamples];
+	int samplesPerCycle = (int)(sampleRate / frequency);
+	for (int i = 0; i < numSamples; i++) {
+		int positionInCycle = i % samplesPerCycle;
+		if (positionInCycle < samplesPerCycle / 2) {
+			waveData[i] = (short)((2.0f * amplitude / (samplesPerCycle / 2)) * positionInCycle - amplitude);
+		}
+		else {
+			waveData[i] = (short)((-2.0f * amplitude / (samplesPerCycle / 2)) * (positionInCycle - samplesPerCycle / 2) + amplitude);
+		}
+	}
+	wfx.Format.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.Format.nChannels = 1;
+	wfx.Format.nSamplesPerSec = sampleRate;
+	wfx.Format.wBitsPerSample = 16;
+	wfx.Format.nBlockAlign = (wfx.Format.nChannels * wfx.Format.wBitsPerSample) / 8;
+	wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
+	wfx.Format.cbSize = 0;
+	buffer.AudioBytes = numSamples * sizeof(short);
+	buffer.pAudioData = (BYTE*)waveData;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	if (XAudioSource) {
+		XAudioSource->Stop(0);
+		XAudioSource->FlushSourceBuffers();
+		XAudioSource->DestroyVoice();
+	}
+	HRESULT hr = XAudio->CreateSourceVoice(&XAudioSource, (WAVEFORMATEX*)&wfx);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to create source voice!", "Time to debug", MB_OK);
+		return;
+	}
+	hr = XAudioSource->SubmitSourceBuffer(&buffer);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to submit source buffer!", "Time to debug", MB_OK);
+		return;
+	}
+}
+
+void AudioEngine::GenerateSawtoothWave(float frequency, float duration) {
+	const int sampleRate = 44100;
+	const int amplitude = 30000;
+	int numSamples = (int)(duration * sampleRate);
+	short* waveData = new short[numSamples];
+	int samplesPerCycle = (int)(sampleRate / frequency);
+	for (int i = 0; i < numSamples; i++) {
+		int positionInCycle = i % samplesPerCycle;
+		waveData[i] = (short)((2.0f * amplitude / samplesPerCycle) * positionInCycle - amplitude);
+	}
+	wfx.Format.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.Format.nChannels = 1;
+	wfx.Format.nSamplesPerSec = sampleRate;
+	wfx.Format.wBitsPerSample = 16;
+	wfx.Format.nBlockAlign = (wfx.Format.nChannels * wfx.Format.wBitsPerSample) / 8;
+	wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
+	wfx.Format.cbSize = 0;
+	buffer.AudioBytes = numSamples * sizeof(short);
+	buffer.pAudioData = (BYTE*)waveData;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	if (XAudioSource) {
+		XAudioSource->Stop(0);
+		XAudioSource->FlushSourceBuffers();
+		XAudioSource->DestroyVoice();
+	}
+	HRESULT hr = XAudio->CreateSourceVoice(&XAudioSource, (WAVEFORMATEX*)&wfx);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to create source voice!", "Time to debug", MB_OK);
+		return;
+	}
+	hr = XAudioSource->SubmitSourceBuffer(&buffer);
+	if (FAILED(hr)) {
+		MessageBoxA(NULL, "Failed to submit source buffer!", "Time to debug", MB_OK);
+		return;
+	}
+}
